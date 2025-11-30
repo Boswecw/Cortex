@@ -1,0 +1,92 @@
+[package]
+name = "cortex"
+version = "0.1.0"
+description = "AI-powered local-first file intelligence system"
+authors = ["Cortex Team"]
+edition = "2021"
+default-run = "cortex"
+
+[lib]
+name = "cortex_lib"
+crate-type = ["lib", "cdylib", "staticlib"]
+
+# Main binary
+[[bin]]
+name = "cortex"
+path = "src/main.rs"
+
+[build-dependencies]
+tauri-build = { version = "2.0", features = [] }
+
+[dependencies]
+# Tauri
+tauri = { version = "2.0", features = ["devtools"] }
+tauri-plugin-shell = "2.0"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Async runtime
+tokio = { version = "1", features = ["full"] }
+
+# Database
+rusqlite = { version = "0.31", features = ["bundled", "blob"] }
+
+# File watching and scanning
+notify = "6.0"
+walkdir = "2.4"
+crossbeam-channel = "0.5"
+
+# Full-text search
+tantivy = "0.22"
+
+# Content extraction
+pulldown-cmark = "0.9"
+docx-rs = "0.4"
+pdf-extract = "0.7"
+encoding_rs = "0.8"
+
+# Error handling
+thiserror = "1.0"
+anyhow = "1.0"
+
+# Logging
+log = "0.4"
+env_logger = "0.11"
+
+# Hashing
+blake3 = "1.5"
+
+# Time handling
+chrono = { version = "0.4", features = ["serde"] }
+
+[dev-dependencies]
+tempfile = "3.8"
+
+# Benchmark binaries
+[[bin]]
+name = "db_benchmark"
+path = "benches/db_benchmark.rs"
+
+[[bin]]
+name = "indexing_benchmark"
+path = "benches/indexing_benchmark.rs"
+
+[[bin]]
+name = "search_benchmark"
+path = "benches/search_benchmark.rs"
+
+[[bin]]
+name = "load_test"
+path = "benches/load_test.rs"
+
+[features]
+default = ["custom-protocol"]
+custom-protocol = ["tauri/custom-protocol"]
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
+
