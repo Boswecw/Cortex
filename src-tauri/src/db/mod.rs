@@ -1,5 +1,5 @@
 mod schema;
-mod operations;
+pub mod operations;
 
 pub use schema::*;
 pub use operations::*;

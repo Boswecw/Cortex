@@ -34,6 +34,14 @@ pub struct SearchResult {
     pub score: f64,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FileEmbedding {
+    pub file_id: i64,
+    pub embedding: Vec<f32>,
+    pub model_version: String,
+    pub created_at: String,
+}
+
 pub fn create_tables(conn: &Connection) -> Result<()> {
     // Files table
     conn.execute(
@@ -115,6 +123,23 @@ pub fn create_tables(conn: &Connection) -> Result<()> {
 
     conn.execute(
         "CREATE INDEX IF NOT EXISTS idx_files_type ON files(file_type)",
+        [],
+    )?;
+
+    // File embeddings table (Phase 2: AI Features)
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS file_embeddings (
+            file_id INTEGER PRIMARY KEY,
+            embedding BLOB NOT NULL,
+            model_version TEXT NOT NULL,
+            created_at TEXT NOT NULL,
+            FOREIGN KEY (file_id) REFERENCES files(id) ON DELETE CASCADE
+        )",
+        [],
+    )?;
+
+    conn.execute(
+        "CREATE INDEX IF NOT EXISTS idx_embeddings_model ON file_embeddings(model_version)",
         [],
     )?;
 

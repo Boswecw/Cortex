@@ -141,3 +141,35 @@ export function formatDate(isoString: string): string {
 export function getFileTypeInfo(fileType: string) {
   return FILE_TYPES[fileType as FileType] || { label: fileType.toUpperCase(), color: 'text-gray-400' };
 }
+
+// ============================================================================
+// AI Types (Phase 2: AI Features)
+// ============================================================================
+
+export interface EmbeddingStatus {
+  total_files: number;
+  files_with_embeddings: number;
+  files_without_embeddings: number;
+  model_downloaded: boolean;
+  model_version: string;
+}
+
+export interface SemanticSearchResult {
+  file_id: number;
+  path: string;
+  filename: string;
+  file_type: string;
+  similarity_score: number;
+}
+
+export interface SemanticSearchFilters {
+  query: string;
+  limit?: number;
+  threshold?: number; // 0.0 - 1.0, default 0.7
+}
+
+export interface SimilarFilesParams {
+  file_id: number;
+  limit?: number;
+  threshold?: number;
+}

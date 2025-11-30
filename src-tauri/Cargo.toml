@@ -22,6 +22,7 @@ tauri-build = { version = "2.0", features = [] }
 # Tauri
 tauri = { version = "2.0", features = ["devtools"] }
 tauri-plugin-shell = "2.0"
+tauri-plugin-dialog = "2.0"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 
@@ -58,6 +59,18 @@ blake3 = "1.5"
 
 # Time handling
 chrono = { version = "0.4", features = ["serde"] }
+
+# ML & Embeddings (Phase 2: AI Features)
+ort = { version = "2.0.0-rc.10", features = ["download-binaries"] }
+ndarray = "0.16"
+tokenizers = "0.20"
+
+# Clustering
+smartcore = "0.3"
+
+# Utilities
+reqwest = { version = "0.12", features = ["blocking"] }
+dirs = "5.0"  # For cross-platform directory paths
 
 [dev-dependencies]
 tempfile = "3.8"

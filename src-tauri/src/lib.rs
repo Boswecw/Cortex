@@ -1,4 +1,5 @@
 // Library exports for testing
+pub mod ai;
 pub mod commands;
 pub mod db;
 pub mod error;

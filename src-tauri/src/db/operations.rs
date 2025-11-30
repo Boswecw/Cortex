@@ -1,4 +1,4 @@
-use crate::db::schema::{File, FileContent, SearchResult};
+use crate::db::schema::{File, FileContent, FileEmbedding, SearchResult};
 use crate::error::{CortexError, Result};
 use rusqlite::{params, Connection};
 
@@ -294,6 +294,194 @@ pub fn get_db_stats(conn: &Connection) -> Result<(i64, i64, i64)> {
     )?;
 
     Ok((total_files, indexed_files, total_size))
+}
+
+// ============================================================================
+// Embedding Operations (Phase 2: AI Features)
+// ============================================================================
+
+/// Insert or update file embedding
+pub fn upsert_embedding(
+    conn: &Connection,
+    file_id: i64,
+    embedding: &[f32],
+    model_version: &str,
+) -> Result<()> {
+    if embedding.len() != 384 {
+        return Err(CortexError::Internal {
+            message: format!(
+                "Invalid embedding dimension: expected 384, got {}",
+                embedding.len()
+            ),
+        });
+    }
+
+    let now = chrono::Utc::now().to_rfc3339();
+
+    // Convert f32 vector to bytes
+    let bytes: Vec<u8> = embedding
+        .iter()
+        .flat_map(|f| f.to_le_bytes())
+        .collect();
+
+    conn.execute(
+        "INSERT INTO file_embeddings (file_id, embedding, model_version, created_at)
+         VALUES (?1, ?2, ?3, ?4)
+         ON CONFLICT(file_id) DO UPDATE SET
+            embedding = excluded.embedding,
+            model_version = excluded.model_version,
+            created_at = excluded.created_at",
+        params![file_id, bytes, model_version, now],
+    )?;
+
+    Ok(())
+}
+
+/// Get embedding for a file
+pub fn get_embedding(conn: &Connection, file_id: i64) -> Result<Option<FileEmbedding>> {
+    let mut stmt = conn.prepare(
+        "SELECT file_id, embedding, model_version, created_at
+         FROM file_embeddings WHERE file_id = ?1"
+    )?;
+
+    let result = stmt.query_row(params![file_id], |row| {
+        let bytes: Vec<u8> = row.get(1)?;
+
+        // Convert bytes back to f32 vector
+        let embedding: Vec<f32> = bytes
+            .chunks_exact(4)
+            .map(|chunk| f32::from_le_bytes([chunk[0], chunk[1], chunk[2], chunk[3]]))
+            .collect();
+
+        Ok(FileEmbedding {
+            file_id: row.get(0)?,
+            embedding,
+            model_version: row.get(2)?,
+            created_at: row.get(3)?,
+        })
+    });
+
+    match result {
+        Ok(emb) => Ok(Some(emb)),
+        Err(rusqlite::Error::QueryReturnedNoRows) => Ok(None),
+        Err(e) => Err(e.into()),
+    }
+}
+
+/// Get all embeddings (for semantic search)
+pub fn get_all_embeddings(conn: &Connection) -> Result<Vec<(i64, Vec<f32>)>> {
+    let mut stmt = conn.prepare(
+        "SELECT file_id, embedding FROM file_embeddings"
+    )?;
+
+    let embeddings = stmt
+        .query_map([], |row| {
+            let file_id: i64 = row.get(0)?;
+            let bytes: Vec<u8> = row.get(1)?;
+
+            // Convert bytes to f32 vector
+            let embedding: Vec<f32> = bytes
+                .chunks_exact(4)
+                .map(|chunk| f32::from_le_bytes([chunk[0], chunk[1], chunk[2], chunk[3]]))
+                .collect();
+
+            Ok((file_id, embedding))
+        })?
+        .collect::<std::result::Result<Vec<_>, _>>()?;
+
+    Ok(embeddings)
+}
+
+/// Get multiple files by IDs (for semantic search results)
+pub fn get_files_by_ids(conn: &Connection, file_ids: &[i64]) -> Result<Vec<File>> {
+    if file_ids.is_empty() {
+        return Ok(Vec::new());
+    }
+
+    // Build placeholders for IN clause
+    let placeholders = file_ids.iter().map(|_| "?").collect::<Vec<_>>().join(",");
+    let query = format!(
+        "SELECT id, path, filename, file_type, size, created_at, modified_at, last_indexed, hash, root_path, is_deleted
+         FROM files
+         WHERE id IN ({}) AND is_deleted = 0
+         ORDER BY id",
+        placeholders
+    );
+
+    let mut stmt = conn.prepare(&query)?;
+    let params: Vec<&dyn rusqlite::ToSql> = file_ids.iter().map(|id| id as &dyn rusqlite::ToSql).collect();
+
+    let files = stmt
+        .query_map(params.as_slice(), |row| {
+            Ok(File {
+                id: row.get(0)?,
+                path: row.get(1)?,
+                filename: row.get(2)?,
+                file_type: row.get(3)?,
+                size: row.get(4)?,
+                created_at: row.get(5)?,
+                modified_at: row.get(6)?,
+                last_indexed: row.get(7)?,
+                hash: row.get(8)?,
+                root_path: row.get(9)?,
+                is_deleted: row.get(10)?,
+            })
+        })?
+        .collect::<std::result::Result<Vec<_>, _>>()?;
+
+    Ok(files)
+}
+
+/// Delete embedding for a file
+pub fn delete_embedding(conn: &Connection, file_id: i64) -> Result<()> {
+    conn.execute(
+        "DELETE FROM file_embeddings WHERE file_id = ?1",
+        params![file_id],
+    )?;
+    Ok(())
+}
+
+/// Count total embeddings
+pub fn count_embeddings(conn: &Connection) -> Result<i64> {
+    let count: i64 = conn.query_row(
+        "SELECT COUNT(*) FROM file_embeddings",
+        [],
+        |row| row.get(0),
+    )?;
+    Ok(count)
+}
+
+/// Get files without embeddings
+pub fn get_files_without_embeddings(conn: &Connection, limit: usize) -> Result<Vec<File>> {
+    let mut stmt = conn.prepare(
+        "SELECT f.id, f.path, f.filename, f.file_type, f.size, f.created_at, f.modified_at,
+                f.last_indexed, f.hash, f.root_path, f.is_deleted
+         FROM files f
+         LEFT JOIN file_embeddings e ON f.id = e.file_id
+         WHERE e.file_id IS NULL AND f.is_deleted = 0
+         ORDER BY f.modified_at DESC
+         LIMIT ?1"
+    )?;
+
+    let files = stmt
+        .query_map(params![limit], |row| {
+            Ok(File {
+                id: row.get(0)?,
+                path: row.get(1)?,
+                filename: row.get(2)?,
+                file_type: row.get(3)?,
+                size: row.get(4)?,
+                created_at: row.get(5)?,
+                modified_at: row.get(6)?,
+                last_indexed: row.get(7)?,
+                hash: row.get(8)?,
+                root_path: row.get(9)?,
+                is_deleted: row.get(10)?,
+            })
+        })?
+        .collect::<std::result::Result<Vec<_>, _>>()?;
+
+    Ok(files)
 }
 
 #[cfg(test)]

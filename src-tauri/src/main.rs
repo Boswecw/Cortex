@@ -23,6 +23,7 @@ async fn main() {
     tauri::Builder::default()
         .manage(app_state)
         .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_dialog::init())
         .invoke_handler(tauri::generate_handler![
             commands::indexing::start_indexing,
             commands::indexing::stop_indexing,
@@ -30,6 +31,12 @@ async fn main() {
             commands::search::search_files,
             commands::search::get_file_detail,
             commands::search::get_search_stats,
+            // AI Commands (Phase 2)
+            commands::ai_commands::get_embedding_status,
+            commands::ai_commands::generate_embeddings,
+            commands::ai_commands::generate_all_embeddings,
+            commands::ai_commands::semantic_search,
+            commands::ai_commands::find_similar_files,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
