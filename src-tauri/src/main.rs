@@ -1,15 +1,8 @@
 // Prevents additional console window on Windows in release builds
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use cortex_lib::{commands, state};
 use log::info;
-
-mod commands;
-mod db;
-mod error;
-mod indexer;
-mod search;
-mod state;
-
 use state::AppState;
 
 #[tokio::main]

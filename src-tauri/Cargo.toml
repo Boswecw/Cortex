@@ -75,22 +75,22 @@ dirs = "5.0"  # For cross-platform directory paths
 [dev-dependencies]
 tempfile = "3.8"
 
-# Benchmark binaries
-[[bin]]
-name = "db_benchmark"
-path = "benches/db_benchmark.rs"
-
-[[bin]]
-name = "indexing_benchmark"
-path = "benches/indexing_benchmark.rs"
-
-[[bin]]
-name = "search_benchmark"
-path = "benches/search_benchmark.rs"
-
-[[bin]]
-name = "load_test"
-path = "benches/load_test.rs"
+# Benchmark binaries - disabled for production builds
+# [[bin]]
+# name = "db_benchmark"
+# path = "benches/db_benchmark.rs"
+#
+# [[bin]]
+# name = "indexing_benchmark"
+# path = "benches/indexing_benchmark.rs"
+#
+# [[bin]]
+# name = "search_benchmark"
+# path = "benches/search_benchmark.rs"
+#
+# [[bin]]
+# name = "load_test"
+# path = "benches/load_test.rs"
 
 [features]
 default = ["custom-protocol"]
