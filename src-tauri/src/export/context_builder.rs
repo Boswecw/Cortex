@@ -289,18 +289,24 @@ impl ContextBuilder {
     /// Calculate export statistics
     fn calculate_stats(&self, files: &[File]) -> Result<ExportStats> {
         let conn = self.db.get_connection();
-        let file_count = files.len();
-        let embedded_file_count = crate::db::operations::count_embeddings(conn)? as usize;
-        let total_size: i64 = files.iter().map(|f| f.size).sum();
+        let total_files = files.len();
+        let files_with_embeddings = crate::db::operations::count_embeddings(conn)? as usize;
+        let total_size_bytes: i64 = files.iter().map(|f| f.size).sum();
 
-        // Rough token estimation (1 token ≈ 4 characters)
-        let estimated_tokens = (total_size / 4) as usize;
+        // Estimate chunk count (assuming ~500 tokens per chunk, ~4 chars per token)
+        // Average: 2000 characters per chunk
+        let total_chunks = if total_size_bytes > 0 {
+            ((total_size_bytes as f64) / 2000.0).ceil() as usize
+        } else {
+            0
+        };
 
         Ok(ExportStats {
-            file_count,
-            embedded_file_count,
-            total_size,
-            estimated_tokens,
+            total_files,
+            total_chunks,
+            total_size_bytes,
+            files_with_embeddings,
+            prompts_generated: 0, // Will be updated by bundler
         })
     }
 

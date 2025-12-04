@@ -69,17 +69,20 @@ pub struct ExportResult {
 /// Statistics about the export
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ExportStats {
-    /// Number of files included
-    pub file_count: usize,
+    /// Total number of files included
+    pub total_files: usize,
 
-    /// Number of files with embeddings
-    pub embedded_file_count: usize,
+    /// Total number of chunks generated
+    pub total_chunks: usize,
 
     /// Total size in bytes
-    pub total_size: i64,
+    pub total_size_bytes: i64,
 
-    /// Estimated token count
-    pub estimated_tokens: usize,
+    /// Number of files with embeddings
+    pub files_with_embeddings: usize,
+
+    /// Number of prompts generated
+    pub prompts_generated: usize,
 }
 
 /// Configuration for Rake export package

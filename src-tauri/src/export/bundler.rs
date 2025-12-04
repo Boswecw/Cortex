@@ -65,11 +65,19 @@ impl BundleBuilder {
         let readme = self.create_export_readme(config, &stats)?;
         self.write_file(&output_dir, "README.md", &readme)?;
 
+        // Update stats with actual prompt count
+        let mut final_stats = stats;
+        final_stats.prompts_generated = if config.include_prompts {
+            prompt_files.len() + 1 // +1 for STARTER_PROMPT.md
+        } else {
+            1 // Just STARTER_PROMPT.md
+        };
+
         Ok(ExportResult {
             context_file,
             starter_prompt_file,
             prompt_files,
-            stats,
+            stats: final_stats,
             exported_at: Utc::now(),
         })
     }
@@ -273,10 +281,10 @@ impl BundleBuilder {
              AI-powered local file intelligence system*\n",
             project_name,
             Utc::now().format("%Y-%m-%d %H:%M:%S UTC"),
-            stats.file_count,
-            stats.embedded_file_count,
-            crate::export::format_file_size(stats.total_size),
-            stats.estimated_tokens
+            stats.total_files,
+            stats.files_with_embeddings,
+            crate::export::format_file_size(stats.total_size_bytes),
+            stats.total_chunks
         ))
     }
 }
