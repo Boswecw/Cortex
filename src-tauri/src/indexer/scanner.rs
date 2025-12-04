@@ -76,10 +76,12 @@ impl FileScanner {
         // Second pass: collect files
         let mut jobs = Vec::new();
 
+        // Clone root_path for closure
+        let root_path_clone = root_path.to_path_buf();
         let walker = WalkDir::new(root_path)
             .follow_links(self.follow_symlinks)
             .into_iter()
-            .filter_entry(|e| self.should_visit(e));
+            .filter_entry(move |e| self.should_visit(e, &root_path_clone));
 
         for entry in walker {
             match entry {
@@ -112,21 +114,29 @@ impl FileScanner {
 
     /// Count total files in directory
     fn count_files(&self, root_path: &Path) -> usize {
+        let root_path_clone = root_path.to_path_buf();
         WalkDir::new(root_path)
             .follow_links(self.follow_symlinks)
             .into_iter()
-            .filter_entry(|e| self.should_visit(e))
+            .filter_entry(move |e| self.should_visit(e, &root_path_clone))
             .filter_map(|e| e.ok())
             .filter(|e| e.file_type().is_file())
             .count()
     }
 
     /// Check if we should visit this directory entry
-    fn should_visit(&self, entry: &DirEntry) -> bool {
+    /// Note: root_path itself is always visited, even if it starts with '.'
+    fn should_visit(&self, entry: &DirEntry, root_path: &Path) -> bool {
         let path = entry.path();
+
+        // Always visit the root directory itself
+        if path == root_path {
+            return true;
+        }
+
         let file_name = path.file_name().and_then(|n| n.to_str()).unwrap_or("");
 
-        // Skip hidden files and directories
+        // Skip hidden files and directories (but not the root)
         if file_name.starts_with('.') && file_name != "." {
             return false;
         }
@@ -180,7 +190,10 @@ impl FileScanner {
     fn is_supported_file(&self, path: &Path) -> bool {
         path.extension()
             .and_then(|ext| ext.to_str())
-            .map(|ext| SUPPORTED_EXTENSIONS.contains(&ext.to_lowercase().as_str()))
+            .map(|ext| {
+                // Use case-insensitive comparison without creating temporary String
+                SUPPORTED_EXTENSIONS.iter().any(|&e| e.eq_ignore_ascii_case(ext))
+            })
             .unwrap_or(false)
     }
 }

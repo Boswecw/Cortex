@@ -34,17 +34,20 @@ impl TextExtractor {
 
     /// Detect encoding and decode bytes to string
     fn decode_with_detection(bytes: &[u8]) -> (String, &'static Encoding, bool) {
-        // Try UTF-8 first (most common)
-        if let Ok(text) = std::str::from_utf8(bytes) {
-            return (text.to_string(), encoding_rs::UTF_8, false);
-        }
-
-        // Detect encoding
-        let (encoding, _bom_length) = encoding_rs::Encoding::for_bom(bytes)
+        // Check for BOM first
+        let (encoding, bom_length) = encoding_rs::Encoding::for_bom(bytes)
             .unwrap_or((encoding_rs::UTF_8, 0));
 
+        // Skip BOM if present
+        let bytes_without_bom = &bytes[bom_length..];
+
+        // Try UTF-8 first (most common)
+        if let Ok(text) = std::str::from_utf8(bytes_without_bom) {
+            return (text.to_string(), encoding, false);
+        }
+
         // Decode with detected encoding
-        let (decoded, _, had_errors) = encoding.decode(bytes);
+        let (decoded, _, had_errors) = encoding.decode(bytes_without_bom);
 
         (decoded.to_string(), encoding, had_errors)
     }

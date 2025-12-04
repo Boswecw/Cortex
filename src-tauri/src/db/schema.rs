@@ -74,12 +74,11 @@ pub fn create_tables(conn: &Connection) -> Result<()> {
     )?;
 
     // FTS5 virtual table
+    // Note: Not using external content (content='...') because we manage FTS via triggers
     conn.execute(
         "CREATE VIRTUAL TABLE IF NOT EXISTS files_fts USING fts5(
             filename,
             content,
-            content='file_content',
-            content_rowid='file_id',
             tokenize='porter'
         )",
         [],
