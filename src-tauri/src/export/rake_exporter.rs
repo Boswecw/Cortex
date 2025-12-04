@@ -1,7 +1,7 @@
 use crate::db::{Database, File, FileContent};
 use crate::error::{CortexError, Result};
 use crate::export::{
-    RakeChunk, RakeChunkMetadata, RakeExportConfig, RakeExportMetadata, RakeExportPackage,
+    PathValidator, RakeChunk, RakeChunkMetadata, RakeExportConfig, RakeExportMetadata, RakeExportPackage,
 };
 use chrono::{DateTime, Utc};
 use std::fs;
@@ -58,6 +58,9 @@ impl RakeExporter {
 
     /// Write export package to JSON file
     pub async fn export_to_file(&self, config: &RakeExportConfig) -> Result<String> {
+        // Validate and sanitize output path (security)
+        let validated_path = PathValidator::validate_export_path(&config.output_path)?;
+
         let package = self.export(config).await?;
 
         // Serialize to JSON
@@ -65,12 +68,12 @@ impl RakeExporter {
             message: format!("Failed to serialize export package: {}", e),
         })?;
 
-        // Write to file
-        fs::write(&config.output_path, json).map_err(|e| CortexError::Internal {
+        // Write to file (using validated path)
+        fs::write(&validated_path, json).map_err(|e| CortexError::Internal {
             message: format!("Failed to write export file: {}", e),
         })?;
 
-        Ok(config.output_path.clone())
+        Ok(validated_path.to_string_lossy().to_string())
     }
 
     /// Get files to export based on configuration

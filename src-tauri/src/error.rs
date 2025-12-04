@@ -11,6 +11,7 @@ pub enum CortexError {
     /// File system errors
     PermissionDenied { path: String, suggestion: String },
     FileNotFound { path: String },
+    InvalidPath { path: String, reason: String },
 
     /// Indexing errors
     ExtractionFailed { path: String, error: String },
@@ -35,6 +36,9 @@ impl fmt::Display for CortexError {
             }
             Self::FileNotFound { path } => {
                 write!(f, "File not found: {}", path)
+            }
+            Self::InvalidPath { path, reason } => {
+                write!(f, "Invalid path '{}': {}", path, reason)
             }
             Self::ExtractionFailed { path, error } => {
                 write!(f, "Failed to extract content from {}: {}", path, error)

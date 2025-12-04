@@ -1,7 +1,7 @@
 use crate::db::Database;
 use crate::error::{CortexError, Result};
 use crate::export::{
-    ContextBuilder, ExportConfig, ExportResult, ExportStats, PromptBuilder
+    ContextBuilder, ExportConfig, ExportResult, ExportStats, PathValidator, PromptBuilder
 };
 use chrono::Utc;
 use std::fs;
@@ -19,8 +19,8 @@ impl BundleBuilder {
 
     /// Create a complete export bundle
     pub async fn create_bundle(&self, config: &ExportConfig) -> Result<ExportResult> {
-        // Create output directory
-        let output_dir = PathBuf::from(&config.output_path);
+        // Validate and sanitize output path (security)
+        let output_dir = PathValidator::validate_export_path(&config.output_path)?;
         self.ensure_directory(&output_dir)?;
 
         // Build CONTEXT.md

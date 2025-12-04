@@ -2,6 +2,7 @@ pub mod context_builder;
 pub mod prompt_builder;
 pub mod bundler;
 pub mod rake_exporter;
+pub mod path_validator;
 
 use serde::{Deserialize, Serialize};
 use chrono::{DateTime, Utc};
@@ -11,6 +12,7 @@ pub use context_builder::ContextBuilder;
 pub use prompt_builder::PromptBuilder;
 pub use bundler::BundleBuilder;
 pub use rake_exporter::RakeExporter;
+pub use path_validator::PathValidator;
 
 /// Configuration for exporting context to VS Code Claude
 #[derive(Debug, Clone, Serialize, Deserialize)]
