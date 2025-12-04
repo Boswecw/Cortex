@@ -33,3 +33,7 @@ build
 
 # Cortex data
 .cortex/
+
+# Export outputs (test/temporary)
+.cortex-export/
+*.cortex-bundle/

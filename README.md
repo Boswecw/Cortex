@@ -22,6 +22,7 @@ Cortex is a **desktop application** that indexes your local files and provides *
 - ✅ **Instant Search** - Sub-100ms search queries with FTS5 full-text search
 - ✅ **Advanced Filters** - Filter by file type, size, and date range
 - ✅ **Real-time Progress** - Live indexing status with progress tracking
+- ✅ **VS Code Claude Export** - Export indexed content for AI coding assistants with context bundling
 - ✅ **Offline First** - All data stored locally in SQLite (no cloud, no tracking)
 - ✅ **Highlighted Results** - Search snippets with match highlighting
 - ✅ **Cross-Platform** - Linux, macOS, Windows support
@@ -168,8 +169,11 @@ See [PERFORMANCE.md](PERFORMANCE.md) for detailed performance analysis.
 
 ## 📚 Documentation
 
+**📖 [Complete Documentation Index](DOCUMENTATION.md)** - Full guide to all documentation
+
 **User Documentation:**
 - [User Guide](docs/USER_GUIDE.md) - How to use Cortex
+- [VS Code Claude Export](VSCODE_EXPORT_COMPLETE.md) - Export feature guide
 - [FAQ](docs/USER_GUIDE.md#faq) - Frequently asked questions
 - [Troubleshooting](docs/USER_GUIDE.md#troubleshooting) - Common issues
 
@@ -180,9 +184,10 @@ See [PERFORMANCE.md](PERFORMANCE.md) for detailed performance analysis.
 - [Deployment Guide](docs/DEPLOYMENT.md) - Building and releasing
 
 **Project Status:**
-- [STATUS.md](STATUS.md) - Current development status (73% Phase 0 complete)
+- [STATUS.md](STATUS.md) - Current development status
 - [TESTING.md](TESTING.md) - Testing guide and coverage
 - [PERFORMANCE.md](PERFORMANCE.md) - Performance targets and optimization
+- [DUE_DILIGENCE_REPORT.md](DUE_DILIGENCE_REPORT.md) - Quality assessment (Dec 4, 2025)
 
 ---
 
