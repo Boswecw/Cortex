@@ -95,7 +95,7 @@ pub fn find_top_k<T: Clone>(
 ///
 /// This will be implemented once we have the database schema for embeddings.
 pub async fn semantic_search(
-    query: &str,
+    _query: &str,
     _limit: usize,
     _threshold: f32,
 ) -> Result<Vec<(i64, f32)>> {

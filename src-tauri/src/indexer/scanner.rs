@@ -257,6 +257,8 @@ mod tests {
     use super::*;
     use std::fs;
     use std::io::Write;
+    use std::path::PathBuf;
+    use crate::indexer::types::IndexPriority;
     use tempfile::TempDir;
 
     fn create_test_file(dir: &Path, name: &str, content: &str) -> PathBuf {
@@ -392,7 +394,7 @@ mod tests {
 
         let progress = scanner.get_progress();
         assert_eq!(progress.total_files, 2);
-        assert_eq!(progress.scanned_files, 2);
+        assert_eq!(progress.current_file, 2);
         assert_eq!(progress.percentage(), 100.0);
     }
 

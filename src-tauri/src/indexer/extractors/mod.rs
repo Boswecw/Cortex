@@ -103,8 +103,9 @@ mod tests {
         assert_eq!(short.summary, Some("Short text".to_string()));
 
         let long = ExtractedContent::new("a".repeat(250));
-        assert!(long.summary.unwrap().ends_with("..."));
-        assert!(long.summary.unwrap().len() <= 203); // 200 + "..."
+        let summary = long.summary.unwrap();
+        assert!(summary.ends_with("..."));
+        assert!(summary.len() <= 203); // 200 + "..."
     }
 
     #[test]

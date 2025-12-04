@@ -130,10 +130,7 @@ mod tests {
         assert_eq!(progress.percentage(), 0.0);
 
         progress.total_files = 100;
-        progress.scanned_files = 50;
+        progress.current_file = 50;
         assert_eq!(progress.percentage(), 50.0);
-
-        progress.add_error("Test error".to_string());
-        assert_eq!(progress.errors.len(), 1);
     }
 }

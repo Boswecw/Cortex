@@ -10,7 +10,7 @@ impl FtsSearcher {
         Self {}
     }
 
-    pub async fn search(&self, query: &str) -> Result<Vec<SearchResult>> {
+    pub async fn search(&self, _query: &str) -> Result<Vec<SearchResult>> {
         // TODO: Implement FTS search
         Ok(vec![])
     }

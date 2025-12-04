@@ -169,7 +169,7 @@ impl EmbeddingService {
         // Extract embeddings from output
         // The model outputs a tensor of shape (batch_size, seq_len, hidden_size)
         // We take the mean across the sequence dimension
-        let (shape, data) = outputs["last_hidden_state"]
+        let (_shape, data) = outputs["last_hidden_state"]
             .try_extract_tensor::<f32>()?;
 
         // Reshape flat data into 3D array (batch_size, seq_len, hidden_size)
@@ -214,7 +214,7 @@ mod tests {
     #[ignore] // Requires model files to be downloaded
     fn test_embed_single_text() {
         let config = EmbeddingConfig::default();
-        let service = EmbeddingService::new(config).unwrap();
+        let mut service = EmbeddingService::new(config).unwrap();
 
         let embedding = service.embed("Hello, world!").unwrap();
 
@@ -229,7 +229,7 @@ mod tests {
     #[ignore] // Requires model files to be downloaded
     fn test_embed_batch() {
         let config = EmbeddingConfig::default();
-        let service = EmbeddingService::new(config).unwrap();
+        let mut service = EmbeddingService::new(config).unwrap();
 
         let texts = vec!["First text", "Second text", "Third text"];
         let embeddings = service.embed_batch(&texts).unwrap();
@@ -244,7 +244,7 @@ mod tests {
     #[ignore] // Requires model files to be downloaded
     fn test_similar_texts_have_similar_embeddings() {
         let config = EmbeddingConfig::default();
-        let service = EmbeddingService::new(config).unwrap();
+        let mut service = EmbeddingService::new(config).unwrap();
 
         let text1 = "The quick brown fox jumps over the lazy dog";
         let text2 = "A fast brown fox leaps over a sleepy dog";

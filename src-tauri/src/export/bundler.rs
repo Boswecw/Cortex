@@ -289,22 +289,6 @@ impl BundleBuilder {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_ensure_directory() {
-        use tempfile::tempdir;
-
-        let temp_dir = tempdir().unwrap();
-        let test_dir = temp_dir.path().join("test_export");
-
-        // Directory should not exist yet
-        assert!(!test_dir.exists());
-
-        // Create a BundleBuilder (we need a dummy database)
-        // This is just a unit test for directory creation
-        // Real integration tests would use a proper database
-    }
-}
+// Tests removed: test_ensure_directory was an incomplete stub that didn't test
+// actual functionality. Integration tests for the full bundle creation workflow
+// should be added instead.

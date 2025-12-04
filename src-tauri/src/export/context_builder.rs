@@ -17,8 +17,6 @@ impl ContextBuilder {
 
     /// Build the complete CONTEXT.md content
     pub async fn build_context(&self, config: &ExportConfig) -> Result<(String, ExportStats)> {
-        let conn = self.db.get_connection();
-
         // Get files to export
         let files = self.get_files_for_export(config)?;
 
@@ -56,7 +54,7 @@ impl ContextBuilder {
     }
 
     /// Get files to export based on configuration
-    fn get_files_for_export(&self, config: &ExportConfig) -> Result<Vec<File>> {
+    fn get_files_for_export(&self, _config: &ExportConfig) -> Result<Vec<File>> {
         let conn = self.db.get_connection();
 
         // For now, get all indexed files (collection support will be added in Phase 3)
