@@ -1,7 +1,7 @@
 use crate::error::{CortexError, Result};
 use crate::indexer::types::IndexJob;
 use crossbeam_channel::{bounded, Receiver, Sender};
-use notify::{Config, Event, EventKind, RecommendedWatcher, RecursiveMode, Watcher};
+use notify::{Event, EventKind, RecommendedWatcher, RecursiveMode, Watcher};
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use std::time::Duration;

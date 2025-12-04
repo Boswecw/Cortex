@@ -5,7 +5,7 @@ use crate::export::{
 };
 use chrono::Utc;
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 /// Bundles export files into a complete VS Code Claude context package
 pub struct BundleBuilder {

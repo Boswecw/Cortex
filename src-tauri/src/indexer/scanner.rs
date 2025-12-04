@@ -1,7 +1,7 @@
 use crate::error::{CortexError, Result};
-use crate::indexer::types::{IndexJob, IndexPriority, ScanProgress};
+use crate::indexer::types::{IndexJob, ScanProgress};
 use std::collections::BinaryHeap;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::sync::{Arc, RwLock};
 use walkdir::{DirEntry, WalkDir};
 

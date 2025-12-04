@@ -1,4 +1,4 @@
-use crate::db::{Database, File, FileContent};
+use crate::db::{Database, File};
 use crate::error::{CortexError, Result};
 use crate::export::{
     PathValidator, RakeChunk, RakeChunkMetadata, RakeExportConfig, RakeExportMetadata, RakeExportPackage,

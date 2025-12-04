@@ -5,7 +5,7 @@ pub use schema::*;
 pub use operations::*;
 
 use crate::error::{CortexError, Result};
-use rusqlite::{Connection, params};
+use rusqlite::Connection;
 use std::path::PathBuf;
 
 pub struct Database {

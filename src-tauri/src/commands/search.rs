@@ -1,7 +1,7 @@
 use crate::db::{get_file_by_id, get_file_content, search_files_fts, SearchResult};
 use crate::error::CortexError;
 use crate::state::AppState;
-use rusqlite::{params, Connection};
+use rusqlite::Connection;
 use serde::{Deserialize, Serialize};
 use std::time::Instant;
 use tauri::State;

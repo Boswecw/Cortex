@@ -4,7 +4,7 @@
 //! Uses the `all-MiniLM-L6-v2` model for fast, offline embeddings.
 
 use anyhow::{Context, Result};
-use ndarray::{Array1, Array2, Array3, Axis};
+use ndarray::{Array2, Array3, Axis};
 use ort::session::builder::GraphOptimizationLevel;
 use ort::session::Session;
 use ort::value::Value;

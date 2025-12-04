@@ -1,4 +1,4 @@
-use crate::db::{Database, File, FileContent};
+use crate::db::{Database, File};
 use crate::error::Result;
 use crate::export::{ExportConfig, ExportStats};
 use chrono::Utc;
@@ -145,7 +145,7 @@ impl ContextBuilder {
         let mut structure = String::from("## Project Structure\n\n```\n");
 
         // Group files by directory
-        let mut tree = self.build_directory_tree(files);
+        let tree = self.build_directory_tree(files);
 
         structure.push_str(&tree);
         structure.push_str("```\n\n");
