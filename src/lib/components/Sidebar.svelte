@@ -51,6 +51,7 @@
     { id: 'all', label: 'All Files', icon: '📁', href: '/' },
     { id: 'recent', label: 'Recent', icon: '🕐', href: '/recent' },
     { id: 'starred', label: 'Starred', icon: '⭐', href: '/starred' },
+    { id: 'export', label: 'Export', icon: '📤', href: '/export' },
     { id: 'settings', label: 'Settings', icon: '⚙️', href: '/settings' }
   ] as const;
 
