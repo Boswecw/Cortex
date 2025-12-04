@@ -87,6 +87,25 @@ pub struct ExportStats {
     pub prompts_generated: usize,
 }
 
+/// Export statistics summary for UI display
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ExportStatsInfo {
+    /// Total number of files in database
+    pub total_files: usize,
+
+    /// Number of files with indexed content
+    pub indexed_files: usize,
+
+    /// Total size in bytes
+    pub total_size: i64,
+
+    /// Human-readable size string
+    pub total_size_human: String,
+
+    /// Number of files with embeddings
+    pub embedded_files: usize,
+}
+
 /// Configuration for Rake export package
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RakeExportConfig {

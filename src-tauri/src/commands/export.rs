@@ -1,6 +1,6 @@
 use crate::export::{
-    BundleBuilder, ExportConfig, ExportPreview, ExportResult, RakeExportConfig, RakeExportMode,
-    RakeExportMetadata, RakeExporter,
+    BundleBuilder, ExportConfig, ExportPreview, ExportResult, ExportStatsInfo,
+    RakeExportConfig, RakeExportMode, RakeExportMetadata, RakeExporter,
 };
 use crate::error::{CortexError, Result};
 use crate::state::AppState;
@@ -269,15 +269,6 @@ pub async fn get_export_stats(state: State<'_, AppState>) -> Result<ExportStatsI
         total_size_human: crate::export::format_file_size(total_size),
         embedded_files: embedding_count as usize,
     })
-}
-
-#[derive(serde::Serialize, serde::Deserialize, Clone)]
-pub struct ExportStatsInfo {
-    pub total_files: usize,
-    pub indexed_files: usize,
-    pub total_size: i64,
-    pub total_size_human: String,
-    pub embedded_files: usize,
 }
 
 #[cfg(test)]
