@@ -54,6 +54,9 @@ anyhow = "1.0"
 log = "0.4"
 env_logger = "0.11"
 
+# Base64 encoding for inline HTML
+base64 = "0.22"
+
 # Hashing
 blake3 = "1.5"
 

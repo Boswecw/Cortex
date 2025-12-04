@@ -12,6 +12,26 @@ pub struct Database {
     conn: Connection,
 }
 
+impl Clone for Database {
+    fn clone(&self) -> Self {
+        // Create a new connection to the same database
+        // This is safe with SQLite WAL mode (multiple readers allowed)
+        let db_path = Self::get_db_path().expect("Failed to get database path");
+        let conn = Connection::open(&db_path).expect("Failed to clone database connection");
+
+        // Apply same performance settings
+        conn.execute_batch(
+            "PRAGMA journal_mode=WAL;
+             PRAGMA synchronous=NORMAL;
+             PRAGMA cache_size=-64000;
+             PRAGMA temp_store=MEMORY;
+             PRAGMA mmap_size=30000000000;"
+        ).expect("Failed to configure cloned connection");
+
+        Self { conn }
+    }
+}
+
 impl Database {
     pub async fn new() -> Result<Self> {
         let db_path = Self::get_db_path()?;

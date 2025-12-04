@@ -855,6 +855,7 @@
       role="dialog"
       aria-modal="true"
       aria-labelledby="shortcuts-modal-title"
+      tabindex="-1"
       class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50"
       onclick={() => showShortcutsModal = false}
       onkeydown={(e) => e.key === 'Escape' && (showShortcutsModal = false)}
@@ -864,6 +865,7 @@
         role="document"
         class="bg-slate-byte border-2 border-neural-gold rounded-xl p-8 max-w-2xl w-full mx-4 shadow-2xl"
         onclick={(e) => e.stopPropagation()}
+        onkeydown={(e) => e.stopPropagation()}
         transition:fly={{ y: -20, duration: 200 }}
       >
         <div class="flex items-center justify-between mb-6">

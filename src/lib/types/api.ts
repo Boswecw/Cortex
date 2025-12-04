@@ -166,10 +166,12 @@ export interface SemanticSearchFilters {
   query: string;
   limit?: number;
   threshold?: number; // 0.0 - 1.0, default 0.7
+  [key: string]: unknown;
 }
 
 export interface SimilarFilesParams {
   file_id: number;
   limit?: number;
   threshold?: number;
+  [key: string]: unknown;
 }

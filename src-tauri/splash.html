@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cortex Loading</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+            color: #fff;
+        }
+
+        .splash-container {
+            text-align: center;
+            animation: fadeIn 0.6s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo {
+            font-size: 72px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -2px;
+        }
+
+        .tagline {
+            font-size: 18px;
+            color: #a8b2d1;
+            margin-bottom: 50px;
+            font-weight: 300;
+        }
+
+        .loader-container {
+            position: relative;
+            width: 200px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            margin: 0 auto 30px;
+        }
+
+        .loader {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 40%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 2px;
+            animation: loading 1.5s ease-in-out infinite;
+        }
+
+        @keyframes loading {
+            0% { left: -40%; }
+            50% { left: 100%; }
+            100% { left: -40%; }
+        }
+
+        .status {
+            font-size: 14px;
+            color: #64ffda;
+            margin-top: 20px;
+            min-height: 20px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        .version {
+            position: absolute;
+            bottom: 20px;
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .brain-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 30px;
+            position: relative;
+        }
+
+        .brain-icon svg {
+            width: 100%;
+            height: 100%;
+            fill: none;
+            stroke: #667eea;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            animation: brainPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes brainPulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+            50% {
+                transform: scale(1.05);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="splash-container">
+        <div class="brain-icon">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+                <circle cx="8" cy="9" r="1.5"/>
+                <circle cx="16" cy="9" r="1.5"/>
+                <path d="M12 17c2.21 0 4-1.79 4-4h-8c0 2.21 1.79 4 4 4z"/>
+                <path d="M4 12h3M17 12h3M12 4v3M12 17v3"/>
+            </svg>
+        </div>
+
+        <div class="logo">CORTEX</div>
+        <div class="tagline">AI-Powered Local Intelligence</div>
+
+        <div class="loader-container">
+            <div class="loader"></div>
+        </div>
+
+        <div class="status" id="status">Initializing...</div>
+    </div>
+
+    <div class="version">v0.1.0</div>
+
+    <script>
+        const statusMessages = [
+            'Initializing...',
+            'Loading database...',
+            'Checking AI models...',
+            'Preparing workspace...',
+            'Almost ready...'
+        ];
+
+        let currentIndex = 0;
+        const statusEl = document.getElementById('status');
+
+        function updateStatus() {
+            if (currentIndex < statusMessages.length) {
+                statusEl.textContent = statusMessages[currentIndex];
+                currentIndex++;
+            }
+        }
+
+        // Update status every 800ms
+        setInterval(updateStatus, 800);
+
+        // Listen for messages from Rust
+        window.__TAURI__ && window.__TAURI__.event.listen('splash-status', (event) => {
+            statusEl.textContent = event.payload;
+        });
+    </script>
+</body>
+</html>
